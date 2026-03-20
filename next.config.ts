@@ -1,7 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  serverExternalPackages: ['puppeteer'],
+  allowedDevOrigins: ['*.ngrok-free.app', '*.ngrok.io'],
 };
 
 export default nextConfig;
