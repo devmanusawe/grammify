@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useLang } from '@/components/LangProvider';
 import { useSession } from 'next-auth/react';
 
@@ -330,7 +330,27 @@ export default function Home() {
   const [showSettings, setShowSettings] = useState(false);
   const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
   const [toast, setToast] = useState<string | null>(null);
+  const [correctionStatuses, setCorrectionStatuses] = useState<Record<number, 'approved' | 'rejected'>>({});
   const inputSectionRef = useRef<HTMLDivElement>(null);
+
+  const effectiveText = useMemo(() => {
+    if (!result) return '';
+    let txt = result.corrected;
+    (result.corrections ?? []).forEach((correction, index) => {
+      if (correctionStatuses[index] === 'rejected') {
+        txt = txt.replace(correction.corrected, correction.original);
+      }
+    });
+    return txt;
+  }, [result, correctionStatuses]);
+
+  const handleApprove = (index: number) => {
+    setCorrectionStatuses(prev => ({ ...prev, [index]: 'approved' }));
+  };
+
+  const handleReject = (index: number) => {
+    setCorrectionStatuses(prev => ({ ...prev, [index]: 'rejected' }));
+  };
 
   useEffect(() => {
     const subtitleLength = (lang === 'th' ? 'ตรวจสอบไวยากรณ์ภาษาอังกฤษและไทยด้วย AI' : 'AI-powered grammar checker').length;
@@ -373,6 +393,7 @@ export default function Home() {
     setIsLoading(true);
     setError(null);
     setResult(null);
+    setCorrectionStatuses({});
 
     try {
       const response = await fetch('/api/check', {
@@ -412,8 +433,8 @@ export default function Home() {
   };
 
   const handleCopy = async () => {
-    if (result?.corrected) {
-      await navigator.clipboard.writeText(result.corrected);
+    if (effectiveText) {
+      await navigator.clipboard.writeText(effectiveText);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     }
@@ -644,6 +665,9 @@ export default function Home() {
                               correction={correction}
                               index={index}
                               isSpelling={isSpelling}
+                              status={correctionStatuses[index]}
+                              onApprove={() => handleApprove(index)}
+                              onReject={() => handleReject(index)}
                             />
                           );
                         })}
@@ -710,7 +734,7 @@ export default function Home() {
               </div>
               <div className="bg-gradient-to-br from-indigo-50/50 via-white to-violet-50/50 rounded-xl p-6 border border-indigo-100/50">
                 <p className="text-base text-slate-800 whitespace-pre-wrap leading-relaxed">
-                  {result.corrected}
+                  {effectiveText}
                 </p>
               </div>
               {result.message && (
@@ -728,41 +752,143 @@ export default function Home() {
   );
 }
 
-function CorrectionCard({ correction, index, isSpelling }: { correction: Correction; index: number; isSpelling: boolean }) {
+function CorrectionCard({
+  correction,
+  index,
+  isSpelling,
+  status,
+  onApprove,
+  onReject,
+}: {
+  correction: Correction;
+  index: number;
+  isSpelling: boolean;
+  status?: 'approved' | 'rejected';
+  onApprove: () => void;
+  onReject: () => void;
+}) {
   const [showTooltip, setShowTooltip] = useState(false);
-  const highlightColor = isSpelling ? 'bg-red-100 text-red-700 border-red-200' : 'bg-amber-100 text-amber-700 border-amber-200';
-  
+
+  const cardBg =
+    status === 'approved'
+      ? 'bg-emerald-50 border-emerald-200'
+      : status === 'rejected'
+      ? 'bg-slate-100 border-slate-200 opacity-60'
+      : 'bg-slate-50 border-slate-100 hover:border-slate-200 hover:bg-white';
+
+  const highlightColor =
+    status === 'approved'
+      ? 'bg-emerald-100 text-emerald-700 border-emerald-300'
+      : isSpelling
+      ? 'bg-red-100 text-red-700 border-red-200'
+      : 'bg-amber-100 text-amber-700 border-amber-200';
+
   return (
-    <div 
+    <div
       className="relative group"
       onMouseEnter={() => setShowTooltip(true)}
       onMouseLeave={() => setShowTooltip(false)}
     >
-      <div className="flex items-center gap-3 p-4 bg-slate-50 rounded-xl border border-slate-100 hover:border-slate-200 hover:bg-white transition-all duration-200">
-        <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold ${
-          isSpelling ? 'bg-red-100 text-red-600' : 'bg-amber-100 text-amber-600'
-        }`}>
-          {index + 1}
+      <div className={`flex items-center gap-3 p-4 rounded-xl border transition-all duration-200 ${cardBg}`}>
+        <div
+          className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold flex-shrink-0 ${
+            status === 'approved'
+              ? 'bg-emerald-200 text-emerald-700'
+              : status === 'rejected'
+              ? 'bg-slate-200 text-slate-500'
+              : isSpelling
+              ? 'bg-red-100 text-red-600'
+              : 'bg-amber-100 text-amber-600'
+          }`}
+        >
+          {status === 'approved' ? (
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+            </svg>
+          ) : status === 'rejected' ? (
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          ) : (
+            index + 1
+          )}
         </div>
-        <div className="flex-1 flex items-center gap-2 flex-wrap">
-          <span className="px-2 py-1 bg-red-50 text-red-600 rounded-lg text-sm font-medium line-through">
+
+        <div className="flex-1 flex items-center gap-2 flex-wrap min-w-0">
+          <span
+            className={`px-2 py-1 bg-red-50 text-red-600 rounded-lg text-sm font-medium ${
+              status === 'rejected' ? '' : 'line-through'
+            }`}
+          >
             {correction.original}
           </span>
-          <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-          </svg>
-          <span className={`px-2 py-1 rounded-lg text-sm font-semibold border ${highlightColor}`}>
-            {correction.corrected}
-          </span>
+          {status !== 'rejected' && (
+            <>
+              <svg className="w-4 h-4 text-slate-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
+              <span className={`px-2 py-1 rounded-lg text-sm font-semibold border ${highlightColor}`}>
+                {correction.corrected}
+              </span>
+            </>
+          )}
         </div>
-        <span className={`text-xs font-medium px-2 py-1 rounded-md ${
-          isSpelling ? 'bg-red-50 text-red-500' : 'bg-amber-50 text-amber-600'
-        }`}>
-          {correction.type || 'Spelling'}
-        </span>
+
+        <div className="flex items-center gap-1.5 flex-shrink-0">
+          <span
+            className={`text-xs font-medium px-2 py-1 rounded-md ${
+              status === 'approved'
+                ? 'bg-emerald-100 text-emerald-600'
+                : status === 'rejected'
+                ? 'bg-slate-200 text-slate-500'
+                : isSpelling
+                ? 'bg-red-50 text-red-500'
+                : 'bg-amber-50 text-amber-600'
+            }`}
+          >
+            {status === 'approved' ? '✓ approved' : status === 'rejected' ? '✗ rejected' : correction.type || 'spelling'}
+          </span>
+
+          {status !== 'approved' && (
+            <button
+              onClick={(e) => { e.stopPropagation(); onApprove(); }}
+              title="Approve"
+              className="w-7 h-7 rounded-lg bg-emerald-100 hover:bg-emerald-200 text-emerald-600 flex items-center justify-center transition-all hover:scale-110"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+              </svg>
+            </button>
+          )}
+          {status !== 'rejected' && (
+            <button
+              onClick={(e) => { e.stopPropagation(); onReject(); }}
+              title="Reject"
+              className="w-7 h-7 rounded-lg bg-red-100 hover:bg-red-200 text-red-500 flex items-center justify-center transition-all hover:scale-110"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          )}
+          {(status === 'approved' || status === 'rejected') && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                status === 'approved' ? onReject() : onApprove();
+              }}
+              title="Undo"
+              className="w-7 h-7 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center transition-all hover:scale-110"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+              </svg>
+            </button>
+          )}
+        </div>
       </div>
 
-      {showTooltip && (
+      {showTooltip && !status && (
         <div className="absolute left-0 top-full mt-2 z-20 w-72 bg-white rounded-xl shadow-xl border border-slate-100 p-4 animate-fade-in">
           <p className="text-xs font-medium text-slate-500 mb-2 uppercase tracking-wide">
             {isSpelling ? 'Spelling' : 'Grammar'} Correction
