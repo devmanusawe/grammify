@@ -247,7 +247,7 @@ async function checkWithOpenAI(text: string, apiKey: string): Promise<NextRespon
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
-  const { text, provider = 'gemini-web', geminiApiKey, openaiApiKey } = body;
+  const { text, provider = 'gemini-api', geminiApiKey, openaiApiKey } = body;
 
   if (!text || text.trim().length === 0) {
     return NextResponse.json({ error: 'กรุณาใส่ข้อความที่ต้องการตรวจสอบ' }, { status: 400 });
@@ -266,7 +266,7 @@ export async function POST(request: NextRequest) {
       if (!openaiApiKey) return NextResponse.json({ error: 'กรุณาใส่ OpenAI API Key ในหน้าตั้งค่า' }, { status: 400 });
       return await checkWithOpenAI(text, openaiApiKey);
     }
-    // default: gemini-web
+    // default: gemini-api
     return await checkWithGeminiWeb(text);
   } catch (error) {
     console.error('Check error:', error);

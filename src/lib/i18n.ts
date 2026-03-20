@@ -102,6 +102,8 @@ const translations = {
     correctedLabel: 'ข้อความที่แก้แล้ว',
     correctionsLabel: 'รายการแก้ไข ({count} จุด)',
     noErrorBadge: '✅ ไม่พบคำผิด',
+    approveAll: 'Approve All',
+    rejectAll: 'Reject All',
 
     // Clear confirm
     clearConfirmTitle: 'เคลียร์ข้อมูลทั้งหมด?',
@@ -210,6 +212,8 @@ const translations = {
     correctedLabel: 'Corrected Text',
     correctionsLabel: 'Corrections ({count})',
     noErrorBadge: '✅ No errors found',
+    approveAll: 'Approve All',
+    rejectAll: 'Reject All',
 
     // Clear confirm
     clearConfirmTitle: 'Clear all data?',

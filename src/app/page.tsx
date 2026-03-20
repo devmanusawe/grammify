@@ -38,7 +38,7 @@ interface Settings {
 }
 
 const DEFAULT_SETTINGS: Settings = {
-  provider: 'gemini-web',
+  provider: 'gemini-api',
   geminiApiKey: '',
   openaiApiKey: '',
 };
@@ -352,6 +352,18 @@ export default function Home() {
     setCorrectionStatuses(prev => ({ ...prev, [index]: 'rejected' }));
   };
 
+  const handleApproveAll = () => {
+    const all: Record<number, 'approved' | 'rejected'> = {};
+    result?.corrections.forEach((_, i) => { all[i] = 'approved'; });
+    setCorrectionStatuses(all);
+  };
+
+  const handleRejectAll = () => {
+    const all: Record<number, 'approved' | 'rejected'> = {};
+    result?.corrections.forEach((_, i) => { all[i] = 'rejected'; });
+    setCorrectionStatuses(all);
+  };
+
   useEffect(() => {
     const subtitleLength = (lang === 'th' ? 'ตรวจสอบไวยากรณ์ภาษาอังกฤษและไทยด้วย AI' : 'AI-powered grammar checker').length;
     const animationDuration = 0.5 * 1000 + subtitleLength * 60 + 300;
@@ -647,14 +659,28 @@ export default function Home() {
                 <>
                   {result.corrections && result.corrections.length > 0 && (
                     <div className="bg-white rounded-2xl p-8 border border-slate-100 shadow-lg animate-scale-in">
-                      <div className="flex items-center justify-between mb-6">
+                      <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
                         <h2 className="text-base font-semibold text-slate-700 flex items-center gap-3">
                           <span className="text-xl">💡</span>
                           {t('correctionsTitle')}
                         </h2>
-                        <span className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-red-50 text-red-600">
-                          {result.corrections.length} {t('errorsFound', { count: result.corrections.length })}
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <span className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-red-50 text-red-600">
+                            {result.corrections.length} {t('errorsFound', { count: result.corrections.length })}
+                          </span>
+                          <button
+                            onClick={handleApproveAll}
+                            className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-50 text-emerald-600 hover:bg-emerald-100 transition-colors"
+                          >
+                            ✓ {t('approveAll')}
+                          </button>
+                          <button
+                            onClick={handleRejectAll}
+                            className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-500 hover:bg-red-50 hover:text-red-500 transition-colors"
+                          >
+                            ✗ {t('rejectAll')}
+                          </button>
+                        </div>
                       </div>
                       <div className="space-y-3">
                         {result.corrections.map((correction, index) => {
