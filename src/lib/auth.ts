@@ -6,11 +6,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   cookies: {
     pkceCodeVerifier: {
       name: "authjs.pkce.code_verifier",
-      options: { httpOnly: true, sameSite: "lax" as const, path: "/", secure: false },
+      options: { httpOnly: true, sameSite: "lax" as const, path: "/", secure: process.env.NODE_ENV === 'production' },
     },
     state: {
       name: "authjs.state",
-      options: { httpOnly: true, sameSite: "lax" as const, path: "/", secure: false },
+      options: { httpOnly: true, sameSite: "lax" as const, path: "/", secure: process.env.NODE_ENV === 'production' },
     },
   },
   callbacks: {

@@ -117,7 +117,7 @@ async function checkWithGeminiWeb(text: string): Promise<NextResponse> {
 async function checkWithGeminiApi(text: string, apiKey: string): Promise<NextResponse> {
   const prompt = buildPrompt(text);
   const res = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
     {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -255,8 +255,9 @@ export async function POST(request: NextRequest) {
 
   try {
     if (provider === 'gemini-api') {
-      if (!geminiApiKey) return NextResponse.json({ error: 'กรุณาใส่ Gemini API Key ในหน้าตั้งค่า' }, { status: 400 });
-      return await checkWithGeminiApi(text, geminiApiKey);
+      const key = geminiApiKey || process.env.GEMINI_API_KEY;
+      if (!key) return NextResponse.json({ error: 'กรุณาใส่ Gemini API Key ในหน้าตั้งค่า' }, { status: 400 });
+      return await checkWithGeminiApi(text, key);
     }
     if (provider === 'chatgpt-web') {
       return await checkWithChatGPTWeb(text);
