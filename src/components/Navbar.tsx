@@ -11,7 +11,7 @@ export function Navbar() {
   const { data: session } = useSession();
 
   const navLinks = [
-    { href: '/', label: lang === 'th' ? 'ตรวจสอบ' : 'Checker', icon: '🔍' },
+    { href: '/', label: 'navChecker', icon: '🔍' },
     { href: '/dashboard', label: 'Dashboard', icon: '📊' },
   ];
 
@@ -48,7 +48,7 @@ export function Navbar() {
                 }`}
               >
                 <span>{icon}</span>
-                {label}
+                {label === 'navChecker' ? (lang === 'th' ? 'ตรวจสอบ' : 'Checker') : label}
                 <span
                   className={`absolute -bottom-0.5 left-0 h-0.5 bg-indigo-500 rounded-full transition-all duration-200 ${
                     active ? 'w-full' : 'w-0'
@@ -72,7 +72,7 @@ export function Navbar() {
                 }`}
               >
                 <span className="text-sm leading-none">{icon}</span>
-                <span className="hidden xs:inline-block">{label}</span>
+                <span className="hidden xs:inline-block">{label === 'navChecker' ? (lang === 'th' ? 'ตรวจสอบ' : 'Checker') : label}</span>
               </Link>
             ))}
           </div>

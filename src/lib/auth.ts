@@ -3,6 +3,16 @@ import Google from "next-auth/providers/google";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [Google],
+  cookies: {
+    pkceCodeVerifier: {
+      name: "authjs.pkce.code_verifier",
+      options: { httpOnly: true, sameSite: "lax" as const, path: "/", secure: false },
+    },
+    state: {
+      name: "authjs.state",
+      options: { httpOnly: true, sameSite: "lax" as const, path: "/", secure: false },
+    },
+  },
   callbacks: {
     async session({ session, token }) {
       if (session.user) {

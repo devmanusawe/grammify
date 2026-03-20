@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useLang } from '@/components/LangProvider';
 import { useSession } from 'next-auth/react';
 
@@ -330,6 +330,16 @@ export default function Home() {
   const [showSettings, setShowSettings] = useState(false);
   const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
   const [toast, setToast] = useState<string | null>(null);
+  const inputSectionRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const subtitleLength = (lang === 'th' ? 'ตรวจสอบไวยากรณ์ภาษาอังกฤษและไทยด้วย AI' : 'AI-powered grammar checker').length;
+    const animationDuration = 0.5 * 1000 + subtitleLength * 60 + 300;
+    const timer = setTimeout(() => {
+      inputSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, animationDuration);
+    return () => clearTimeout(timer);
+  }, [lang]);
 
   useEffect(() => {
     const saved = localStorage.getItem('grammify-settings');
@@ -517,7 +527,7 @@ export default function Home() {
                 )}
               </div>
               
-              <div className="relative group">
+              <div className="relative group" ref={inputSectionRef}>
                 <textarea
                   value={text}
                   onChange={(e) => setText(e.target.value)}
