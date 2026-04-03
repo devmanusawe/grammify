@@ -22,26 +22,26 @@ function LoginContent() {
 
   return (
     <div className="w-full max-w-md relative">
-      <div className="bg-white/70 backdrop-blur-2xl rounded-3xl border border-white/60 shadow-2xl p-8 relative overflow-hidden">
+      <div className="bg-white/70 dark:bg-slate-900/80 backdrop-blur-2xl rounded-3xl border border-white/60 dark:border-slate-700/60 shadow-2xl p-8 relative overflow-hidden">
         <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-indigo-500 via-violet-500 to-purple-500" />
         
         <div className="text-center mb-8">
-          <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-500/30">
+          <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-2xl flex items-center justify-center shadow-lg dark:shadow-indigo-500/30">
             <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
             </svg>
           </div>
-          <h2 className="text-xl font-bold text-slate-800 mb-1">Welcome to Grammify</h2>
-          <p className="text-slate-500 text-sm">Sign in to access your grammar reports</p>
+          <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-1">Welcome to Grammify</h2>
+          <p className="text-slate-500 dark:text-slate-400 text-sm">Sign in to access your grammar reports</p>
         </div>
 
         <button
           onClick={handleGoogleSignIn}
           disabled={isLoading}
-          className="w-full flex items-center justify-center gap-3 bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700 font-medium py-3 px-5 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-70 disabled:cursor-not-allowed"
+          className="w-full flex items-center justify-center gap-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 hover:border-slate-300 dark:hover:border-slate-500 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-medium py-3 px-5 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-70 disabled:cursor-not-allowed"
         >
           {isLoading ? (
-            <svg className="animate-spin h-5 w-5 text-slate-600" viewBox="0 0 24 24">
+            <svg className="animate-spin h-5 w-5 text-slate-600 dark:text-slate-400" viewBox="0 0 24 24">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
             </svg>
@@ -56,8 +56,8 @@ function LoginContent() {
           <span>Continue with Google</span>
         </button>
 
-        <div className="mt-6 pt-6 border-t border-slate-100 text-center">
-          <Link href="/" className="text-sm text-slate-500 hover:text-indigo-600 font-medium transition-colors inline-flex items-center gap-1">
+        <div className="mt-6 pt-6 border-t border-slate-100 dark:border-slate-700 text-center">
+          <Link href="/" className="text-sm text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium transition-colors inline-flex items-center gap-1">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
@@ -71,12 +71,12 @@ function LoginContent() {
 
 export default function LoginPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50/30 to-purple-50/30 relative overflow-hidden flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50/30 to-purple-50/30 dark:from-slate-900 dark:via-slate-900 dark:to-indigo-950 relative overflow-hidden flex items-center justify-center p-4">
       <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
-        <div className="absolute w-[500px] h-[500px] bg-gradient-to-br from-indigo-400/20 to-violet-400/20 -top-40 -right-40 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute w-[400px] h-[400px] bg-gradient-to-br from-purple-400/15 to-pink-400/15 top-1/3 -left-32 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+        <div className="absolute w-[500px] h-[500px] bg-gradient-to-br from-indigo-400/20 dark:from-indigo-600/20 to-violet-400/20 dark:to-violet-600/20 -top-40 -right-40 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute w-[400px] h-[400px] bg-gradient-to-br from-purple-400/15 dark:from-purple-600/15 to-pink-400/15 dark:to-pink-600/15 top-1/3 -left-32 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
       </div>
-      <Suspense fallback={<div className="w-full max-w-md"><div className="bg-white/70 backdrop-blur-2xl rounded-3xl border border-white/60 shadow-2xl p-8 animate-pulse"><div className="h-64 bg-slate-200 rounded-lg" /></div></div>}>
+      <Suspense fallback={<div className="w-full max-w-md"><div className="bg-white/70 dark:bg-slate-900/80 backdrop-blur-2xl rounded-3xl border border-white/60 dark:border-slate-700/60 shadow-2xl p-8 animate-pulse"><div className="h-64 bg-slate-200 dark:bg-slate-800 rounded-lg" /></div></div>}>
         <LoginContent />
       </Suspense>
     </div>

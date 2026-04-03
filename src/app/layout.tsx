@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Prompt, Inter } from "next/font/google";
 import "./globals.css";
 import { LangProvider } from "@/components/LangProvider";
+import { ThemeProvider } from "@/components/ThemeProvider";
 import { AuthProvider } from "@/components/AuthProvider";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
@@ -28,15 +29,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="th">
+    <html lang="th" data-scroll-behavior="smooth" data-theme="dark" suppressHydrationWarning>
       <body className={`${prompt.variable} ${inter.variable} font-sans min-h-screen flex flex-col`}>
-        <LangProvider>
-          <AuthProvider>
-            <Navbar />
-            {children}
-            <Footer />
-          </AuthProvider>
-        </LangProvider>
+        <ThemeProvider>
+          <LangProvider>
+            <AuthProvider>
+              <Navbar />
+              {children}
+              <Footer />
+            </AuthProvider>
+          </LangProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
